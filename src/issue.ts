@@ -56,12 +56,20 @@ function isIssueKey(query: string): boolean {
 function buildJql(query: string): string {
   const spaceAndInvalidChars = /[ "]/;
 
+  const notStatusRegex = /\^!([a-z0-9_-]+|"[a-z0-9_ -]+")/gi;
+  const notStatusMatchingGroup = Array.from(query.matchAll(notStatusRegex));
+  const notStatuus = notStatusMatchingGroup.map((item) => item[1].replace(/^"|"$/g, ""));
+  query = query.replace(notStatusRegex, "");
+
   const statusRegex = /!([a-z0-9_-]+|"[a-z0-9_ -]+")/gi;
   const statusMatchingGroup = Array.from(query.matchAll(statusRegex));
   const statuus = statusMatchingGroup.map((item) => item[1].replace(/^"|"$/g, ""));
-
-  console.log("Status: ", statuus);
   query = query.replace(statusRegex, "");
+
+  const notAssigneeRegex = /\^%([.@a-z0-9_-]+|"[a-z0-9_ -]+")/gi;
+  const notAssigneeMatchingGroup = Array.from(query.matchAll(notAssigneeRegex));
+  const notAssignee = notAssigneeMatchingGroup.map((item) => item[1].replace(/^"|"$/g, ""));
+  query = query.replace(notAssigneeRegex, "");
 
   const assigneeRegex = /%([.@a-z0-9_-]+|"[a-z0-9_ -]+")/gi;
   const assigneeMatchingGroup = Array.from(query.matchAll(assigneeRegex));
@@ -74,23 +82,33 @@ function buildJql(query: string): string {
     terms
       .filter((term) => term.startsWith(prefix) && term.length > prefix.length)
       .map((term) => term.substring(prefix.length));
+
+  const notProjects = collectPrefixed("^@", terms);
+  const notIssueTypes = collectPrefixed("^#", terms);
+
   const projects = collectPrefixed("@", terms);
   const issueTypes = collectPrefixed("#", terms);
 
   const unwantedTextTermChars = /[-+!*&]/;
   const textTerms = terms
-    .filter((term) => !"@#!%".includes(term[0]))
+    .filter((term) => !"@#!%^".includes(term[0]))
     .flatMap((term) => term.split(unwantedTextTermChars))
     .filter((term) => term.length > 0);
 
   const escapeStr = (str: string) => `"${str}"`;
   const inClause = (entity: string, items: string[]) =>
     items.length > 0 ? `${entity} IN (${items.map(escapeStr)})` : undefined;
+  const notInClause = (entity: string, items: string[]) => inClause(entity, items)?.replace(" IN ", " NOT IN ");
+
   const jqlConditions = [
     inClause("project", projects),
     inClause("issueType", issueTypes),
     inClause("status", statuus),
     inClause("assignee", assignee),
+    notInClause("project", notProjects),
+    notInClause("issueType", notIssueTypes),
+    notInClause("status", notStatuus),
+    notInClause("assignee", notAssignee),
     ...textTerms.map((term) => `text~"${term}*"`),
   ];
 

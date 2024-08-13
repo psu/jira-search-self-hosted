@@ -56,6 +56,14 @@ function parseImageUrl(url: string): ImageSpec {
         key: g.key,
       }),
     },
+    {
+      pattern: /\/secure\/viewavatar\?.+&avatarId=(?<key>[0-9]+)&avatarType=(?<imageType>[a-z]+)/i,
+      spec: (g) => ({
+        urlPath: `secure/viewavatar?size=medium&avatarId=${g.key}&avatarType=${g.imageType}`,
+        imageType: g.imageType,
+        key: g.key,
+      }),
+    },
   ];
   const imgSpec = matcher
     .map((m) => ({ matcher: m, match: url.match(m.pattern) }))

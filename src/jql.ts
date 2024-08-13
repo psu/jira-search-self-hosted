@@ -31,7 +31,7 @@ interface Issues {
   issues?: Issue[];
 }
 
-interface User {
+export interface User {
   accountId: string;
   accountType: string;
   active: boolean;
@@ -141,7 +141,7 @@ function statusIcon(status: IssueStatus): Image {
   }
 }
 export async function searchFromQuery(query: string): Promise<ResultItem[]> {
-  const jql = isIssueKey(query) ? `key=${query}` : query;
+  const jql = buildJql(isIssueKey(query) ? `key=${query}` : query);
   console.debug(jql);
   const result = await jiraFetchObject<Issues>(
     "/rest/api/2/search",

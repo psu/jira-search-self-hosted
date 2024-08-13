@@ -1,8 +1,10 @@
 import { SearchCommand, ResultItem } from "./command";
-import { searchFromQuery } from "./jql";
+import { searchFromQuery, User } from "./jql";
+import { jiraFetchObject } from "./jira";
 
-function searchOpen(query: string): Promise<ResultItem[]> {
-  return searchFromQuery(`${query} ${assignee ? "!Unresolved %" + assignee : ""}`);
+async function searchOpen(query: string): Promise<ResultItem[]> {
+  const myselfResult = await jiraFetchObject<User>("/rest/api/2/myself");
+  return searchFromQuery(`${query} !Unresolved %${myselfResult.emailAddress}`);
 }
 
 export default function SearchMyIssueCommand() {

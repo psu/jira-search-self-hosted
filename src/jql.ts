@@ -58,16 +58,16 @@ function buildJql(query: string): string {
   const notStatusMatchingGroup = Array.from(query.matchAll(notStatusRegex));
   const notStatuusInclFaux = notStatusMatchingGroup.map((item) => item[1].replace(/^"|"$/g, ""));
   query = query.replace(notStatusRegex, "");
-  const notStatuus = notStatuusInclFaux.filter((term) => term.match(/unresolved/i) === null);
-  const notResolution = notStatuus.length !== notStatuusInclFaux.length ? "resolution != Unresolved" : undefined;
+  const notStatuus = notStatuusInclFaux.filter((term) => term.match(/CatDone/i) === null);
+  const notCatDone = notStatuus.length !== notStatuusInclFaux.length ? "statusCategory != Done" : undefined;
 
   const statusRegex = /!([a-z0-9_-]+|"[a-z0-9_ -]+")/gi;
   const statusMatchingGroup = Array.from(query.matchAll(statusRegex));
   const statuusInclFaux = statusMatchingGroup.map((item) => item[1].replace(/^"|"$/g, ""));
   query = query.replace(statusRegex, "");
 
-  const statuus = statuusInclFaux.filter((term) => term.match(/unresolved/i) === null);
-  const resolution = statuus.length !== statuusInclFaux.length ? "resolution = Unresolved" : undefined;
+  const statuus = statuusInclFaux.filter((term) => term.match(/CatDone/i) === null);
+  const catDone = statuus.length !== statuusInclFaux.length ? "statusCategory = Done" : undefined;
 
   const notAssigneeRegex = /\^%([.@a-z0-9_-]+|"[a-z0-9_ -]+")/gi;
   const notAssigneeMatchingGroup = Array.from(query.matchAll(notAssigneeRegex));
@@ -112,8 +112,8 @@ function buildJql(query: string): string {
     notInClause("issueType", notIssueTypes),
     notInClause("status", notStatuus),
     notInClause("assignee", notAssignee),
-    resolution,
-    notResolution,
+    catDone,
+    notCatDone,
     ...textTerms.map((term) => `text~"${term}*"`),
   ];
 

@@ -43,6 +43,13 @@
       "subtitle": "Jira Search (Self-Hosted)",
       "description": "Search Jira projects by title",
       "mode": "view"
+    },
+    {
+      "name": "predefined",
+      "title": "Search Issues (Predefined)",
+      "subtitle": "Jira Search (Self-Hosted)",
+      "description": "Search Jira issues with predefined terms",
+      "mode": "view"
     }
   ],
   "preferences": [
@@ -69,6 +76,14 @@
       "description": "Enable to use unsafe HTTPS for self-signed certificates.",
       "default": false,
       "label": "Enable"
+    },
+    {
+      "name": "predefined_terms",
+      "type": "textfield",
+      "required": false,
+      "title": "Terms for predefined search",
+      "description": "These search terms are always included in the command 'Search Issues (predefined)'",
+      "placeholder": "@MYPROJECT !New"
     }
   ],
   "dependencies": {

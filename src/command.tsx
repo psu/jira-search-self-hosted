@@ -68,7 +68,7 @@ export function SearchCommand(search: SearchFunction, searchBarPlaceholder?: str
             <Action.CopyToClipboard content={htmlLink(item)} title="Copy HTML Link" />
           </ActionPanel.Section>
           <ActionPanel.Section title="Custom Callbacks">
-            {callbacks.map((c) => buildCallback(c, item.url))}
+            {callbacks?.map((c) => buildCallback(c, item.url))}
           </ActionPanel.Section>
         </ActionPanel>
       }

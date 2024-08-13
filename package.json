@@ -81,9 +81,33 @@
       "name": "predefined_terms",
       "type": "textfield",
       "required": false,
-      "title": "Terms for predefined search",
+      "title": "Terms for the *Predefined* Issue Search",
       "description": "These search terms are always included in the command 'Search Issues (predefined)'",
       "placeholder": "@MYPROJECT !New"
+    },
+    {
+      "name": "callback1",
+      "type": "textfield",
+      "required": false,
+      "title": "Custom Callback 1",
+      "description": "Title|(key)|URL to be added as an Action on each item, use '{url}' as placeholder.'",
+      "placeholder": "Title|(key)|raycast://…={url}"
+    },
+    {
+      "name": "callback2",
+      "type": "textfield",
+      "required": false,
+      "title": "Custom Callback 2",
+      "description": "Title|(key)|URL to be added as an Action on each item, use '{url}' as placeholder.'",
+      "placeholder": "Title|(key)|raycast://…={url}"
+    },
+    {
+      "name": "callback3",
+      "type": "textfield",
+      "required": false,
+      "title": "Custom Callback 3",
+      "description": "Title|(key)|URL to be added as an Action on each item, use '{url}' as placeholder.'",
+      "placeholder": "Title|(key)|raycast://…={url}"
     }
   ],
   "dependencies": {

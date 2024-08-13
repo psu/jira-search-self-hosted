@@ -1,4 +1,4 @@
-import { ActionPanel, List, showToast, Action, Toast } from "@raycast/api";
+import { ActionPanel, List, showToast, Action, Toast, getPreferenceValues, Keyboard } from "@raycast/api";
 import { useEffect, useState } from "react";
 import { ErrorText } from "./exception";
 
@@ -7,6 +7,22 @@ export type ResultItem = List.Item.Props & {
   linkText?: string;
 };
 type SearchFunction = (query: string) => Promise<ResultItem[]>;
+
+const prefs: { callback1: string; callback2: string; callback3: string } = getPreferenceValues();
+const callbacks: string[][] = [];
+callbacks.push(prefs.callback1?.split("|"));
+callbacks.push(prefs.callback2?.split("|"));
+callbacks.push(prefs.callback3?.split("|"));
+
+const buildCallback = (callback: string[], url: string) => {
+  return callback[0] !== "" ? (
+    <Action.OpenInBrowser
+      title={`Run '${callback[0]}'`}
+      url={callback[2].replace("{url}", encodeURI(url))}
+      shortcut={{ modifiers: ["ctrl"], key: callback[1] as Keyboard.KeyEquivalent }}
+    />
+  ) : undefined;
+};
 
 const markdownLink = (item: ResultItem) => `[${item.linkText ?? item.title}](${item.url})`;
 const htmlLink = (item: ResultItem) => `<a href="${item.url}">${item.linkText ?? item.title}</a>`;
@@ -50,6 +66,9 @@ export function SearchCommand(search: SearchFunction, searchBarPlaceholder?: str
           <ActionPanel.Section title="Link">
             <Action.CopyToClipboard content={markdownLink(item)} title="Copy Markdown Link" />
             <Action.CopyToClipboard content={htmlLink(item)} title="Copy HTML Link" />
+          </ActionPanel.Section>
+          <ActionPanel.Section title="Custom Callbacks">
+            {callbacks.map((c) => buildCallback(c, item.url))}
           </ActionPanel.Section>
         </ActionPanel>
       }

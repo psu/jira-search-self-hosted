@@ -90,24 +90,24 @@
       "type": "textfield",
       "required": false,
       "title": "Custom Callback 1",
-      "description": "Title|(key)|URL to be added as an Action on each item, use '{url}' as placeholder.'",
-      "placeholder": "Title|(key)|raycast://…={url}"
+      "description": "Title|(key)|URL to be added as an Action",
+      "placeholder": "Title|(key)|raycast://extension…"
     },
     {
       "name": "callback2",
       "type": "textfield",
       "required": false,
       "title": "Custom Callback 2",
-      "description": "Title|(key)|URL to be added as an Action on each item, use '{url}' as placeholder.'",
-      "placeholder": "Title|(key)|raycast://…={url}"
+      "description": "Title|(key)|URL to be added as an Action",
+      "placeholder": "Title|(key)|raycast://extension…"
     },
     {
       "name": "callback3",
       "type": "textfield",
       "required": false,
       "title": "Custom Callback 3",
-      "description": "Title|(key)|URL to be added as an Action on each item, use '{url}' as placeholder.'",
-      "placeholder": "Title|(key)|raycast://…={url}"
+      "description": "Title|(key)|URL to be added as an Action",
+      "placeholder": "Title|(key)|raycast://extension…"
     }
   ],
   "dependencies": {

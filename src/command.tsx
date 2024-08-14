@@ -1,4 +1,4 @@
-import { ActionPanel, List, showToast, Action, Toast, getPreferenceValues, Keyboard } from "@raycast/api";
+import { ActionPanel, List, showToast, Action, Toast, getPreferenceValues, Keyboard, Clipboard } from "@raycast/api";
 import { useEffect, useState } from "react";
 import { ErrorText } from "./exception";
 
@@ -15,13 +15,26 @@ callbacks.push(prefs.callback2?.split("|"));
 callbacks.push(prefs.callback3?.split("|"));
 
 const buildCallback = (callback: string[], url: string) => {
-  return callback[0] !== "" ? (
+  if (callback[0] === "") return undefined;
+
+  let actionUrl = callback[2];
+  let actionOnOpen = async () => {
+    await Clipboard.copy(url, { transient: true });
+  };
+
+  if (callback[2].includes("{url}")) {
+    actionUrl = callback[2].replace("{url}", encodeURI(url));
+    actionOnOpen = async () => {};
+  }
+
+  return (
     <Action.OpenInBrowser
       title={`Run '${callback[0]}'`}
-      url={callback[2].replace("{url}", encodeURI(url))}
+      url={actionUrl}
       shortcut={{ modifiers: ["ctrl"], key: callback[1] as Keyboard.KeyEquivalent }}
+      onOpen={actionOnOpen}
     />
-  ) : undefined;
+  );
 };
 
 const markdownLink = (item: ResultItem) => `[${item.linkText ?? item.title}](${item.url})`;

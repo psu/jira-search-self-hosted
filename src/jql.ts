@@ -114,7 +114,7 @@ function buildJql(query: string): string {
     notInClause("assignee", notAssignee),
     catDone,
     notCatDone,
-    ...textTerms.map((term) => `text~"${term}*"`),
+    ...textTerms.map((term) => `(text~"${term}*" OR issueKey >= "${term}-1")`),
   ];
 
   const jql = jqlConditions.filter((condition) => condition !== undefined).join(" AND ");
@@ -123,7 +123,7 @@ function buildJql(query: string): string {
 
 function isIssueKey(query: string): boolean {
   const issueKeyPattern = /^[a-z]+-[0-9]+$/i;
-  return query.match(issueKeyPattern) !== null;
+  return query.trim().match(issueKeyPattern) !== null;
 }
 
 function statusIcon(status: IssueStatus): Image {
@@ -141,7 +141,7 @@ function statusIcon(status: IssueStatus): Image {
   }
 }
 export async function searchFromQuery(query: string): Promise<ResultItem[]> {
-  const jql = buildJql(isIssueKey(query) ? `key=${query}` : query);
+  const jql = isIssueKey(query) ? `(key=${query} OR issueKey >= ${query}) ORDER BY issueKey` : buildJql(query);
   console.debug(jql);
   const result = await jiraFetchObject<Issues>(
     "/rest/api/2/search",

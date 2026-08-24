@@ -16,15 +16,18 @@ interface IssueStatus {
     key: string;
   };
 }
-
+interface IssueAssignee {
+  displayName: string;
+  emailAddress: string;
+}
 interface Issue {
   id: string;
   key: string;
-  assignee: string;
   fields: {
     summary: string;
     issuetype: IssueType;
     status: IssueStatus;
+    assignee: IssueAssignee;
   };
 }
 
@@ -50,7 +53,7 @@ export interface User {
   timeZone: string;
 }
 
-const fields = "summary,issuetype,status";
+const fields = "summary,issuetype,status,assignee";
 
 function buildJql(query: string): string {
   const spaceAndInvalidChars = /[ "]/;
@@ -59,16 +62,16 @@ function buildJql(query: string): string {
   const notStatusMatchingGroup = Array.from(query.matchAll(notStatusRegex));
   const notStatuusInclFaux = notStatusMatchingGroup.map((item) => item[1].replace(/^"|"$/g, ""));
   query = query.replace(notStatusRegex, "");
-  const notStatuus = notStatuusInclFaux.filter((term) => term.match(/CatDone/i) === null);
-  const notCatDone = notStatuus.length !== notStatuusInclFaux.length ? "statusCategory != Done" : undefined;
+  const notStatuus = notStatuusInclFaux.filter((term) => term.match(/_Open/i) === null);
+  const notCatDone = notStatuus.length !== notStatuusInclFaux.length ? "statusCategory = Done" : undefined;
 
   const statusRegex = /!([a-z0-9_-]+|"[a-z0-9_ -]+")/gi;
   const statusMatchingGroup = Array.from(query.matchAll(statusRegex));
   const statuusInclFaux = statusMatchingGroup.map((item) => item[1].replace(/^"|"$/g, ""));
   query = query.replace(statusRegex, "");
 
-  const statuus = statuusInclFaux.filter((term) => term.match(/CatDone/i) === null);
-  const catDone = statuus.length !== statuusInclFaux.length ? "statusCategory = Done" : undefined;
+  const statuus = statuusInclFaux.filter((term) => term.match(/_Open/i) === null);
+  const catDone = statuus.length !== statuusInclFaux.length ? "statusCategory != Done" : undefined;
 
   const notAssigneeRegex = /\^%([.@a-z0-9_-]+|"[a-z0-9_ -]+")/gi;
   const notAssigneeMatchingGroup = Array.from(query.matchAll(notAssigneeRegex));
@@ -152,7 +155,9 @@ export async function searchFromQuery(query: string): Promise<ResultItem[]> {
   const mapResult = async (issue: Issue): Promise<ResultItem> => ({
     id: issue.id,
     title: issue.fields.summary,
-    subtitle: `${issue.key} · ${issue.assignee}`,
+    subtitle: `${issue.key}${
+      issue.fields.assignee?.displayName ? " · " + issue.fields.assignee.displayName.split(" ")[0] : ""
+    }`,
     icon: await jiraImage(issue.fields.issuetype.iconUrl),
     accessoryIcon: statusIcon(issue.fields.status),
     accessoryTitle: issue.fields.status.name,

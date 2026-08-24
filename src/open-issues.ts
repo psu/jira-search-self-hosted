@@ -4,7 +4,7 @@ import { jiraFetchObject } from "./jira";
 
 async function searchOpen(query: string): Promise<ResultItem[]> {
   const myselfResult = await jiraFetchObject<User>("/rest/api/2/myself");
-  return searchFromQuery(`${query} !Unresolved %${myselfResult.emailAddress}`);
+  return searchFromQuery(`${query} !_Open %${myselfResult.emailAddress}`);
 }
 
 export default function SearchMyIssueCommand() {

@@ -20,6 +20,7 @@ interface IssueStatus {
 interface Issue {
   id: string;
   key: string;
+  assignee: string;
   fields: {
     summary: string;
     issuetype: IssueType;
@@ -151,7 +152,7 @@ export async function searchFromQuery(query: string): Promise<ResultItem[]> {
   const mapResult = async (issue: Issue): Promise<ResultItem> => ({
     id: issue.id,
     title: issue.fields.summary,
-    subtitle: `${issue.key} · ${issue.fields.issuetype.name}`,
+    subtitle: `${issue.key} · ${issue.assignee}`,
     icon: await jiraImage(issue.fields.issuetype.iconUrl),
     accessoryIcon: statusIcon(issue.fields.status),
     accessoryTitle: issue.fields.status.name,
